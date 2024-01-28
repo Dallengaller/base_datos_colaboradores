@@ -1,35 +1,30 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// App.jsx
+import React, { useState } from 'react';
+import Formulario from './components/Formulario';
+import Listado from './components/Listado';
+import { BaseColaboradores } from './BaseColaboradores';
 
 function App() {
-  const [count, setCount] = useState(0)
+    const [colaboradoresIngresados, setColaboradoresIngresados] = useState([]);
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    const agregarColaborador = (nuevoColaborador) => {
+        setColaboradoresIngresados([...colaboradoresIngresados, nuevoColaborador]);
+    };
+
+    const todosLosColaboradores = [...BaseColaboradores, ...colaboradoresIngresados];
+
+    return (
+        <div className="container d-flex align-items-center justify-content-center vh-100">
+            <div className="row">
+                <div className="col-12 col-md-6">
+                    <Formulario onAgregarColaborador={agregarColaborador} />
+                </div>
+                <div className="col-12 col-md-6 mb-4">
+                    <Listado colaboradores={todosLosColaboradores} />
+                </div>
+            </div>
+        </div>
+    );
 }
 
-export default App
+export default App;
