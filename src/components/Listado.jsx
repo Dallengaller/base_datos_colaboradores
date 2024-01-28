@@ -1,4 +1,4 @@
-// components/Listado.jsx
+// Listado.jsx
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import Table from 'react-bootstrap/Table';

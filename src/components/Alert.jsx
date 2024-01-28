@@ -1,3 +1,5 @@
+// Alert.jsx
+
 const Alert = ({ children, color }) => {
     return (
       <>

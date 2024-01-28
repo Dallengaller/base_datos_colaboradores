@@ -1,3 +1,5 @@
+// Formulario.jsx
+
 import React, { useState } from 'react';
 import Alert from './Alert';
 
@@ -11,24 +13,12 @@ const Formulario = ({ onAgregarColaborador }) => {
   };
 
   const [colaborador, setColaborador] = useState(initialState);
-  const [showAlert, setShowAlert] = useState({ status: false, type: '', message: '' });
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const capturaInput = (e) => {
     const { name, value } = e.target;
     setColaborador((prevColaborador) => ({ ...prevColaborador, [name]: value }));
-  };
-
-  const mostrarAlerta = (type, message) => {
-    setShowAlert({ status: true, type, message });
-    setTimeout(() => setShowAlert({ status: false, type: '', message: '' }), 3000);
-  };
-
-  const validarCampoNumerico = (campo, regex, mensajeError) => {
-    if (!regex.test(colaborador[campo])) {
-      mostrarAlerta('danger', mensajeError);
-      return false;
-    }
-    return true;
   };
 
   const agregarNuevoColaborador = (e) => {
@@ -38,26 +28,35 @@ const Formulario = ({ onAgregarColaborador }) => {
 
     // Validaciones
     if (camposRequeridos.some((campo) => !colaborador[campo])) {
-      mostrarAlerta('danger', 'Completa todos los campos!');
+      setErrorMessage('Completa todos los campos!');
+      setSuccessMessage('');
       return;
     }
 
-    // Validación de formato de correo electrónico
+    
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(colaborador.correo)) {
-      mostrarAlerta('danger', 'Ingrese un correo electrónico válido');
+      setErrorMessage('Ingrese un correo electrónico válido');
+      setSuccessMessage('');
       return;
     }
 
-    // Validación de números en el campo de teléfono y edad
-    if (!validarCampoNumerico('telefono', /^[0-9]+$/, 'Ingrese solo números en el campo de teléfono') || 
-        !validarCampoNumerico('edad', /^\d+$/, 'Ingrese solo números en el campo de Edad')) {
+   
+    if (!/^\d+$/.test(colaborador.telefono) || !/^\d+$/.test(colaborador.edad)) {
+      setErrorMessage('Ingrese solo números en los campos de teléfono y edad');
+      setSuccessMessage('');
       return;
     }
 
-    // Si todas las validaciones son exitosas, agrega al colaborador y muestra una alerta de éxito
+
     onAgregarColaborador(colaborador);
     setColaborador(initialState);
-    mostrarAlerta('success', 'Colaborador agregado!');
+    setSuccessMessage('Colaborador agregado!');
+    setErrorMessage('');
+
+  
+    setTimeout(() => {
+      setSuccessMessage('');
+    }, 3000);
   };
 
   return (
@@ -81,7 +80,8 @@ const Formulario = ({ onAgregarColaborador }) => {
           <button type="submit" className="btn btn-primary">
             Agregar Colaborador
           </button>
-          {showAlert.status && <Alert color={showAlert.type}>{showAlert.message}</Alert>}
+          {successMessage && <Alert color="success">{successMessage}</Alert>}
+          {errorMessage && <Alert color="danger">{errorMessage}</Alert>}
         </div>
       </form>
     </div>
@@ -89,3 +89,5 @@ const Formulario = ({ onAgregarColaborador }) => {
 };
 
 export default Formulario;
+
+
