@@ -2,166 +2,85 @@ import React, { useState } from 'react';
 import Alert from './Alert';
 
 const Formulario = ({ onAgregarColaborador }) => {
-  const [colaborador, setColaborador] = useState({
+  const initialState = {
     nombre: '',
     correo: '',
     edad: '',
     cargo: '',
     telefono: '',
-  });
+  };
 
-  const [showAlert, setShowAlert] = useState({
-    status: false,
-    type: '',
-    message: '',
-  });
+  const [colaborador, setColaborador] = useState(initialState);
+  const [showAlert, setShowAlert] = useState({ status: false, type: '', message: '' });
 
   const capturaInput = (e) => {
     const { name, value } = e.target;
-    setColaborador((prevColaborador) => ({
-      ...prevColaborador,
-      [name]: value,
-    }));
+    setColaborador((prevColaborador) => ({ ...prevColaborador, [name]: value }));
+  };
+
+  const mostrarAlerta = (type, message) => {
+    setShowAlert({ status: true, type, message });
+    setTimeout(() => setShowAlert({ status: false, type: '', message: '' }), 3000);
+  };
+
+  const validarCampoNumerico = (campo, regex, mensajeError) => {
+    if (!regex.test(colaborador[campo])) {
+      mostrarAlerta('danger', mensajeError);
+      return false;
+    }
+    return true;
   };
 
   const agregarNuevoColaborador = (e) => {
     e.preventDefault();
 
+    const camposRequeridos = ['nombre', 'correo', 'edad', 'cargo', 'telefono'];
+
     // Validaciones
-    if (!colaborador.nombre || !colaborador.correo || !colaborador.edad || !colaborador.cargo || !colaborador.telefono) {
-      setShowAlert({
-        status: true,
-        type: 'danger',
-        message: 'Completa todos los campos!',
-      });
+    if (camposRequeridos.some((campo) => !colaborador[campo])) {
+      mostrarAlerta('danger', 'Completa todos los campos!');
       return;
     }
 
     // Validación de formato de correo electrónico
-    const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!correoRegex.test(colaborador.correo)) {
-      setShowAlert({
-        status: true,
-        type: 'danger',
-        message: 'Ingrese un correo electrónico válido',
-      });
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(colaborador.correo)) {
+      mostrarAlerta('danger', 'Ingrese un correo electrónico válido');
       return;
     }
 
-    // Validación de números en el campo de teléfono
-    const telefonoRegex = /^[0-9]+$/;
-    if (!telefonoRegex.test(colaborador.telefono)) {
-      setShowAlert({
-        status: true,
-        type: 'danger',
-        message: 'Ingrese solo números en el campo de teléfono',
-      });
+    // Validación de números en el campo de teléfono y edad
+    if (!validarCampoNumerico('telefono', /^[0-9]+$/, 'Ingrese solo números en el campo de teléfono') || 
+        !validarCampoNumerico('edad', /^\d+$/, 'Ingrese solo números en el campo de Edad')) {
       return;
     }
 
     // Si todas las validaciones son exitosas, agrega al colaborador y muestra una alerta de éxito
     onAgregarColaborador(colaborador);
-    setColaborador({
-      nombre: '',
-      correo: '',
-      edad: '',
-      cargo: '',
-      telefono: '',
-    });
-
-    setShowAlert({
-      status: true,
-      type: 'success',
-      message: 'Colaborador agregado!',
-    });
-
-    // Después de un tiempo, oculta la alerta de éxito
-    setTimeout(() => {
-      setShowAlert({
-        status: false,
-        type: '',
-        message: '',
-      });
-    }, 3000); // 3000 milisegundos (3 segundos)
+    setColaborador(initialState);
+    mostrarAlerta('success', 'Colaborador agregado!');
   };
 
   return (
-    <div>
+    <div className='p-3'>
       <h2>Agregar Colaborador</h2>
-
       <form onSubmit={agregarNuevoColaborador}>
-        <div className="mb-3">
-          <label htmlFor="nombre" className="form-label">
-          </label>
-          <input
-            type="text"
-            name="nombre"
-            value={colaborador.nombre}
-            onChange={capturaInput}
-            className="form-control"
-            placeholder="Nombre del Colaborador"
-          />
-        </div>
-
-        <div className="mb-3">
-          <label htmlFor="correo" className="form-label">
-          </label>
-          <input
-            type="email"
-            name="correo"
-            value={colaborador.correo}
-            onChange={capturaInput}
-            className="form-control"
-            placeholder="Correo del Colaborador"
-          />
-        </div>
-
-        <div className="mb-3">
-          <label htmlFor="edad" className="form-label">
-          </label>
-          <input
-            type="text"
-            name="edad"
-            value={colaborador.edad}
-            onChange={capturaInput}
-            className="form-control"
-            placeholder="Edad del Colaborador"
-          />
-        </div>
-
-        <div className="mb-3">
-          <label htmlFor="cargo" className="form-label">
-          </label>
-          <input
-            type="text"
-            name="cargo"
-            value={colaborador.cargo}
-            onChange={capturaInput}
-            className="form-control"
-            placeholder="Cargo del Colaborador"
-          />
-        </div>
-
-        <div className="mb-3">
-          <label htmlFor="telefono" className="form-label">
-          </label>
-          <input
-            type="text"
-            name="telefono"
-            value={colaborador.telefono}
-            onChange={capturaInput}
-            className="form-control"
-            placeholder="Teléfono del Colaborador"
-          />
-        </div>
-
-        {/* Botón y Alerta en el mismo contenedor */}
+        {Object.keys(initialState).map((campo) => (
+          <div className="mb-3" key={campo}>
+            <label htmlFor={campo} className="form-label"></label>
+            <input
+              type={campo === 'correo' ? 'email' : 'text'}
+              name={campo}
+              value={colaborador[campo]}
+              onChange={capturaInput}
+              className="form-control"
+              placeholder={`${campo.charAt(0).toUpperCase() + campo.slice(1)} del Colaborador`}
+            />
+          </div>
+        ))}
         <div className="d-flex flex-column align-items-start">
           <button type="submit" className="btn btn-primary">
             Agregar Colaborador
           </button>
-
-          {/* Alerta */}
           {showAlert.status && <Alert color={showAlert.type}>{showAlert.message}</Alert>}
         </div>
       </form>
