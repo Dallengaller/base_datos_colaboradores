@@ -13,4 +13,5 @@ Currently, two official plugins are available:
 # Se ha agregado un validador de campos para que todos sean completados.
 # El validador tambien informa que cuando se agrega la edad o telefono, solo deben ir numeros.
 # Todos los componentes se importan en el App.jsx
+# Se ha instalado la libreria de Boostrap.
 # Se ha agregado responsividad para tamanos de pantalla grande y pequeno.

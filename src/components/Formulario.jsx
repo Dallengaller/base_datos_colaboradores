@@ -1,9 +1,7 @@
 // Formulario.jsx
-
 import React, { useState } from 'react';
-import Alert from './Alert';
 
-const Formulario = ({ onAgregarColaborador }) => {
+const Formulario = ({ onAgregarColaborador, setAlert }) => {
   const initialState = {
     nombre: '',
     correo: '',
@@ -13,8 +11,6 @@ const Formulario = ({ onAgregarColaborador }) => {
   };
 
   const [colaborador, setColaborador] = useState(initialState);
-  const [successMessage, setSuccessMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
 
   const capturaInput = (e) => {
     const { name, value } = e.target;
@@ -28,34 +24,26 @@ const Formulario = ({ onAgregarColaborador }) => {
 
     // Validaciones
     if (camposRequeridos.some((campo) => !colaborador[campo])) {
-      setErrorMessage('Completa todos los campos!');
-      setSuccessMessage('');
+      setAlert({ type: 'danger', message: 'Completa todos los campos!' });
       return;
     }
 
-    
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(colaborador.correo)) {
-      setErrorMessage('Ingrese un correo electrónico válido');
-      setSuccessMessage('');
+      setAlert({ type: 'danger', message: 'Ingrese un correo electrónico válido' });
       return;
     }
 
-   
     if (!/^\d+$/.test(colaborador.telefono) || !/^\d+$/.test(colaborador.edad)) {
-      setErrorMessage('Ingrese solo números en los campos de teléfono y edad');
-      setSuccessMessage('');
+      setAlert({ type: 'danger', message: 'Ingrese solo números en los campos de teléfono y edad' });
       return;
     }
-
 
     onAgregarColaborador(colaborador);
     setColaborador(initialState);
-    setSuccessMessage('Colaborador agregado!');
-    setErrorMessage('');
+    setAlert({ type: 'success', message: 'Colaborador agregado!' });
 
-  
     setTimeout(() => {
-      setSuccessMessage('');
+      setAlert(null);
     }, 3000);
   };
 
@@ -65,7 +53,7 @@ const Formulario = ({ onAgregarColaborador }) => {
       <form onSubmit={agregarNuevoColaborador}>
         {Object.keys(initialState).map((campo) => (
           <div className="mb-3" key={campo}>
-            <label htmlFor={campo} className="form-label"></label>
+            
             <input
               type={campo === 'correo' ? 'email' : 'text'}
               name={campo}
@@ -80,8 +68,6 @@ const Formulario = ({ onAgregarColaborador }) => {
           <button type="submit" className="btn btn-primary">
             Agregar Colaborador
           </button>
-          {successMessage && <Alert color="success">{successMessage}</Alert>}
-          {errorMessage && <Alert color="danger">{errorMessage}</Alert>}
         </div>
       </form>
     </div>
@@ -89,5 +75,3 @@ const Formulario = ({ onAgregarColaborador }) => {
 };
 
 export default Formulario;
-
-
